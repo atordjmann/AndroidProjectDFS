@@ -29,7 +29,7 @@ public class NewsActivity extends AppCompatActivity {
 
         this.RemplirNewsData(source);
 
-        ListView newsListView = (ListView) findViewById(R.id.newslistview);
+        ListView newsListView = (ListView) findViewById(R.id.mylistview);
         NewsAdapter adapter = new NewsAdapter(this, listNews);
         newsListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -51,7 +51,11 @@ public class NewsActivity extends AppCompatActivity {
                 Log.d("result", array.toString());
                 for (int i = 0; i < array.length(); i++) {
                     String elmt = array.get(i).toString();
-                    listNews.add(new News(elmt, "auteur", "date", "image"));
+                    String title = array.getJSONObject(i).getString("title");
+                    String auteur = array.getJSONObject(i).getString("author");
+                    //String date = array.getJSONObject(i).getString("date");
+
+                    listNews.add(new News(title, auteur, "date", "image"));
                 }
                 Log.i("data", listNews.toString());
 

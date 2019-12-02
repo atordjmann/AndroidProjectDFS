@@ -33,9 +33,9 @@ public class NewsAdapter extends BaseAdapter {
             Log.v("test", "convertView is null");
             holder = new ViewHolder();
             convertView = inflater.inflate(R.layout.news_item, null);
-            TextView tvTitre = (TextView) convertView.findViewById(R.id.txtTitre);
-            TextView tvAuteur = (TextView) convertView.findViewById(R.id.txtAuteur);
-            TextView tvDate = (TextView) convertView.findViewById(R.id.txtDate);
+            holder.tvTitre = (TextView) convertView.findViewById(R.id.txtTitre);
+            holder.tvAuteur = (TextView) convertView.findViewById(R.id.txtAuteur);
+            holder.tvDate = (TextView) convertView.findViewById(R.id.txtDate);
 
             convertView.setTag(holder);
 
