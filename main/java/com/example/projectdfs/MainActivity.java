@@ -9,8 +9,10 @@ import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    List<Source> listSources = new ArrayList<Source>();
+    List<String> listSourcesName = new ArrayList<String>();
+    Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, listSourcesName );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     private void GetSourcesAPI(){
@@ -61,8 +70,17 @@ public class MainActivity extends AppCompatActivity {
                 String result = InputStreamOperations.InputStreamToString(inputStream);
                 JSONObject jsonObject = new JSONObject(result);
                 JSONArray array = jsonObject.getJSONArray("sources");
+                for (int i = 0; i < array.length(); i++) {
+                    String id = array.getJSONObject(i).getString("id");
+                    String name = array.getJSONObject(i).getString("name");
+                    String description = array.getJSONObject(i).getString("description");
+                    String urlSource = array.getJSONObject(i).getString("url");
+                    String category = array.getJSONObject(i).getString("category");
 
-                Log.d("result", array.toString());
+                    listSources.add(new Source(id, name, description, urlSource, category));
+                    listSourcesName.add(name);
+                }
+
                 TextView mTxtDisplay = (TextView) findViewById(R.id.textHello);
                 mTxtDisplay.setText("Response is: " + array.toString());
             }

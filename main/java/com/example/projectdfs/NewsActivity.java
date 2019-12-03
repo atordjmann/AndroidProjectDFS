@@ -48,14 +48,16 @@ public class NewsActivity extends AppCompatActivity {
                 String result = InputStreamOperations.InputStreamToString(inputStream);
                 JSONObject jsonObject = new JSONObject(result);
                 JSONArray array = jsonObject.getJSONArray("articles");
-                Log.d("result", array.toString());
                 for (int i = 0; i < array.length(); i++) {
-                    String elmt = array.get(i).toString();
                     String title = array.getJSONObject(i).getString("title");
                     String auteur = array.getJSONObject(i).getString("author");
-                    //String date = array.getJSONObject(i).getString("date");
+                    String date = array.getJSONObject(i).getString("publishedAt");
+                    String urlArticle = array.getJSONObject(i).getString("url");
+                    String urlToImage = array.getJSONObject(i).getString("urlToImage");
+                    String content = array.getJSONObject(i).getString("content");
 
-                    listNews.add(new News(title, auteur, "date", "image"));
+
+                    listNews.add(new News(title, auteur, date, urlToImage, urlArticle, content));
                 }
                 Log.i("data", listNews.toString());
 

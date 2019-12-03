@@ -5,6 +5,25 @@ public class News {
     private String auteur;
     private String date;
     private String image;
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    private String content;
 
     public String getAuteur() {
         return auteur;
@@ -38,10 +57,12 @@ public class News {
         this.titre = titre;
     }
 
-    public News(String titre, String auteur, String date, String image){
+    public News(String titre, String auteur, String date, String image, String url, String content){
         this.titre = titre;
         this.auteur = auteur;
         this.date = date;
         this.image = image;
+        this.url = url;
+        this.content = content;
     }
 }
