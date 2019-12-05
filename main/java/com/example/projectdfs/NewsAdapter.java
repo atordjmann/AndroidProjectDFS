@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -38,7 +39,6 @@ public class NewsAdapter extends BaseAdapter {
             holder.tvDate = (TextView) convertView.findViewById(R.id.txtDate);
 
             convertView.setTag(holder);
-
         } else {
             Log.v("test", "convertView is not null");
             holder = (ViewHolder) convertView.getTag();

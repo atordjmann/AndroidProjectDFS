@@ -8,8 +8,30 @@
 
     <ListView
         android:id="@+id/mylistview"
+        android:layout_width="413dp"
+        android:layout_height="642dp"
+        android:layout_marginTop="84dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinner"
         android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:background="#8BFFFFFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        style="@android:style/Widget.DeviceDefault.TextView"
+        android:layout_width="416dp"
+        android:layout_height="36dp"
+        android:background="#3E527A5C"
+        android:text="    Liste des actualités"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
