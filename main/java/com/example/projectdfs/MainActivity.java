@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -124,13 +125,13 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < array.length(); i++) {
                         String title = array.getJSONObject(i).getString("title");
                         String auteur = array.getJSONObject(i).getString("author");
-                        String date = array.getJSONObject(i).getString("publishedAt");
+                        String date = String.format(array.getJSONObject(i).getString("publishedAt"), "dd/MM/yy");
                         String urlArticle = array.getJSONObject(i).getString("url");
                         String urlToImage = array.getJSONObject(i).getString("urlToImage");
                         String content = array.getJSONObject(i).getString("content");
 
 
-                        listNews.add(new News(title, auteur, date, urlToImage, urlArticle, content));
+                        listNews.add(new News(title, auteur=="null"?"":auteur, date=="null"?"":date, urlToImage, urlArticle, content));
                     }
                     Log.i("data", listNews.toString());
 
@@ -142,8 +143,16 @@ public class MainActivity extends AppCompatActivity {
                     AdapterView.OnItemClickListener setOnActuClickListener = ( new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapter, View arg1, int position, long arg3) {
-                            String item = adapter.getItemAtPosition(position).toString();
-                            Log.i("detail", item);
+                            News item = (News) adapter.getItemAtPosition(position);
+                            Intent intentDetail = new Intent(MainActivity.this, NewsDetailActivity.class);
+                            intentDetail.putExtra("EXTRA_TITRE", item.getTitre());
+                            intentDetail.putExtra("EXTRA_AUTEUR", item.getAuteur());
+                            intentDetail.putExtra("EXTRA_CONTENT", item.getContent());
+                            intentDetail.putExtra("EXTRA_DATE", item.getDate());
+                            intentDetail.putExtra("EXTRA_IMAGE", item.getImage());
+                            intentDetail.putExtra("EXTRA_URL", item.getUrl());
+
+                            startActivity(intentDetail);
                         }
                     }  );
                     newsListView.setOnItemClickListener(setOnActuClickListener);
