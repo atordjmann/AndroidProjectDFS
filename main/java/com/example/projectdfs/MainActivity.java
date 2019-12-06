@@ -23,9 +23,12 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -125,15 +128,23 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < array.length(); i++) {
                         String title = array.getJSONObject(i).getString("title");
                         String auteur = array.getJSONObject(i).getString("author");
-                        String date = String.format(array.getJSONObject(i).getString("publishedAt"), "dd/MM/yy");
+                        String date = array.getJSONObject(i).getString("publishedAt");
                         String urlArticle = array.getJSONObject(i).getString("url");
                         String urlToImage = array.getJSONObject(i).getString("urlToImage");
                         String content = array.getJSONObject(i).getString("content");
+                        SimpleDateFormat format = new SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ssZ"), Locale.FRENCH);
+                        Date dateString = new Date();
+                        try{
+                            dateString = format.parse(date.replaceAll("Z$","+0000"));
+
+                        } catch(ParseException e){
+                            e.printStackTrace();
+                        }
 
 
-                        listNews.add(new News(title, auteur=="null"?"":auteur, date=="null"?"":date, urlToImage, urlArticle, content));
+                        listNews.add(new News(title, auteur=="null"?"":auteur, date=="null"?"":dateString.toString(), urlToImage, urlArticle, content=="null"?"":content));
                     }
-                    Log.i("data", listNews.toString());
+
 
                     ListView newsListView = (ListView) findViewById(R.id.mylistview);
                     NewsAdapter adapter = new NewsAdapter(this, listNews);
@@ -165,7 +176,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Toast.makeText(this, "Caught Exception", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
-                Log.e("test", e.toString());
             }
         }
 

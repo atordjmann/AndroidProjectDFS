@@ -24,10 +24,10 @@ public class NewsDetailActivity extends AppCompatActivity {
         TextView date = (TextView) findViewById(R.id.detailDate);
         TextView content = (TextView) findViewById(R.id.detailContent);
 
-        titre.setText(sessionTitre == "null"?"pas de titre":sessionTitre);
-        auteur.setText(sessionAuteur == "null"?"pas d'auteur":sessionAuteur);
-        date.setText(sessionDate=="null"?"pas de date":sessionDate);
-        content.setText(sessionContent=="null"?"pas de description":sessionContent);
+        titre.setText(sessionTitre);
+        auteur.setText(sessionAuteur);
+        date.setText(sessionDate);
+        content.setText(sessionContent);
 
     }
 }

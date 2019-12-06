@@ -29,7 +29,7 @@
         android:layout_width="416dp"
         android:layout_height="36dp"
         android:background="#3E527A5C"
-        android:text="    Liste des actualités"
+        android:text="        Liste des actualités"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
