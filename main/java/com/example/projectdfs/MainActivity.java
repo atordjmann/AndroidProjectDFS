@@ -2,8 +2,13 @@ package com.example.projectdfs;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -38,44 +43,82 @@ public class MainActivity extends AppCompatActivity {
     List<News> listNews = new ArrayList<News>();
     Spinner spinner;
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
 
-        if(Build.VERSION.SDK_INT > 9){
+        if (Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
 
-        this.GetSourcesAPI();
+        runTask();
 
-        spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, listSourcesName );
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-
-        String source = "google-news-fr";
-        this.RemplirNewsData(source);
-
-        AdapterView.OnItemSelectedListener elementSelectedListener = new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> spinner, View container, int position, long id) {
-                String sourceName = spinner.getItemAtPosition(position).toString();
-                int index = 0;
-                while(listSources.get(index).getName() != sourceName){
-                    index +=1;
-                }
-                String sourceId = listSources.get(index).getId();
-                RemplirNewsData(sourceId);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> arg0) {
-            }
-        };
-        spinner.setOnItemSelectedListener(elementSelectedListener);
     }
 
+    public void runTask () {
+        if (isNetworkAvailable()) {
+
+            this.GetSourcesAPI();
+
+            spinner = (Spinner) findViewById(R.id.spinner);
+            ArrayAdapter spinnerAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, listSourcesName);
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(spinnerAdapter);
+
+            String source = "google-news-fr";
+            this.RemplirNewsData(source);
+
+            AdapterView.OnItemSelectedListener elementSelectedListener = new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> spinner, View container, int position, long id) {
+                    String sourceName = spinner.getItemAtPosition(position).toString();
+                    int index = 0;
+                    while (listSources.get(index).getName() != sourceName) {
+                        index += 1;
+                    }
+                    String sourceId = listSources.get(index).getId();
+                    RemplirNewsData(sourceId);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                }
+            };
+            spinner.setOnItemSelectedListener(elementSelectedListener);
+
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setCancelable(false);
+            builder.setTitle("No Internet connection");
+            builder.setMessage("Une connection internet est requise. Veuillez réessayer");
+            builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    finish();
+                }
+            });
+            builder.setPositiveButton("Réessayer", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+
+                    runTask();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            Toast.makeText(MainActivity.this, "Network unavailable", Toast.LENGTH_LONG).show();
+        }
+    }
     private void GetSourcesAPI() {
         try {
             String myUrl = "https://newsapi.org/v2/sources?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&language=fr";
@@ -111,73 +154,74 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             Log.e("test", e.toString());
         }
+
     }
 
-        private void RemplirNewsData (String source){
+    private void RemplirNewsData(String source) {
         listNews = new ArrayList<News>();
-            try {
-                String myUrl = "https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&language=fr&sources=" + source;
-                URL url = new URL(myUrl);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.connect();
-                int reponseCode = connection.getResponseCode();
-                if (reponseCode == HttpURLConnection.HTTP_OK) {
-                    InputStream inputStream = connection.getInputStream();
-                    String result = InputStreamOperations.InputStreamToString(inputStream);
-                    JSONObject jsonObject = new JSONObject(result);
-                    JSONArray array = jsonObject.getJSONArray("articles");
-                    for (int i = 0; i < array.length(); i++) {
-                        String title = array.getJSONObject(i).getString("title");
-                        String auteur = array.getJSONObject(i).getString("author");
-                        String date = array.getJSONObject(i).getString("publishedAt");
-                        String urlArticle = array.getJSONObject(i).getString("url");
-                        String urlToImage = array.getJSONObject(i).getString("urlToImage");
-                        String content = array.getJSONObject(i).getString("content");
-                        SimpleDateFormat format = new SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ssZ"), Locale.FRENCH);
-                        Date dateString = new Date();
-                        try{
-                            dateString = format.parse(date.replaceAll("Z$","+0000"));
+        try {
+            String myUrl = "https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&language=fr&sources=" + source;
+            URL url = new URL(myUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            int reponseCode = connection.getResponseCode();
+            if (reponseCode == HttpURLConnection.HTTP_OK) {
+                InputStream inputStream = connection.getInputStream();
+                String result = InputStreamOperations.InputStreamToString(inputStream);
+                JSONObject jsonObject = new JSONObject(result);
+                JSONArray array = jsonObject.getJSONArray("articles");
+                for (int i = 0; i < array.length(); i++) {
+                    String title = array.getJSONObject(i).getString("title");
+                    String auteur = array.getJSONObject(i).getString("author");
+                    String date = array.getJSONObject(i).getString("publishedAt");
+                    String urlArticle = array.getJSONObject(i).getString("url");
+                    String urlToImage = array.getJSONObject(i).getString("urlToImage");
+                    String content = array.getJSONObject(i).getString("content");
+                    SimpleDateFormat format = new SimpleDateFormat(("yyyy-MM-dd'T'HH:mm:ssZ"), Locale.FRENCH);
+                    Date dateString = new Date();
+                    try {
+                        dateString = format.parse(date.replaceAll("Z$", "+0000"));
 
-                        } catch(ParseException e){
-                            e.printStackTrace();
-                        }
-
-
-                        listNews.add(new News(title, auteur=="null"?"":auteur, date=="null"?"":dateString.toString(), urlToImage, urlArticle, content=="null"?"":content));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
 
 
-                    ListView newsListView = (ListView) findViewById(R.id.mylistview);
-                    NewsAdapter adapter = new NewsAdapter(this, listNews);
-                    newsListView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
-
-                    AdapterView.OnItemClickListener setOnActuClickListener = ( new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapter, View arg1, int position, long arg3) {
-                            News item = (News) adapter.getItemAtPosition(position);
-                            Intent intentDetail = new Intent(MainActivity.this, NewsDetailActivity.class);
-                            intentDetail.putExtra("EXTRA_TITRE", item.getTitre());
-                            intentDetail.putExtra("EXTRA_AUTEUR", item.getAuteur());
-                            intentDetail.putExtra("EXTRA_CONTENT", item.getContent());
-                            intentDetail.putExtra("EXTRA_DATE", item.getDate());
-                            intentDetail.putExtra("EXTRA_IMAGE", item.getImage());
-                            intentDetail.putExtra("EXTRA_URL", item.getUrl());
-
-                            startActivity(intentDetail);
-                        }
-                    }  );
-                    newsListView.setOnItemClickListener(setOnActuClickListener);
-
-
-                } else {
-                    Toast.makeText(this, "Unable to complete your request", Toast.LENGTH_LONG).show();
+                    listNews.add(new News(title, auteur == "null" ? "" : auteur, date == "null" ? "" : dateString.toString(), urlToImage, urlArticle, content == "null" ? "" : content));
                 }
 
-            } catch (Exception e) {
-                Toast.makeText(this, "Caught Exception", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
+
+                ListView newsListView = (ListView) findViewById(R.id.mylistview);
+                NewsAdapter adapter = new NewsAdapter(this, listNews);
+                newsListView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+
+                AdapterView.OnItemClickListener setOnActuClickListener = (new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapter, View arg1, int position, long arg3) {
+                        News item = (News) adapter.getItemAtPosition(position);
+                        Intent intentDetail = new Intent(MainActivity.this, NewsDetailActivity.class);
+                        intentDetail.putExtra("EXTRA_TITRE", item.getTitre());
+                        intentDetail.putExtra("EXTRA_AUTEUR", item.getAuteur());
+                        intentDetail.putExtra("EXTRA_CONTENT", item.getContent());
+                        intentDetail.putExtra("EXTRA_DATE", item.getDate());
+                        intentDetail.putExtra("EXTRA_IMAGE", item.getImage());
+                        intentDetail.putExtra("EXTRA_URL", item.getUrl());
+
+                        startActivity(intentDetail);
+                    }
+                });
+                newsListView.setOnItemClickListener(setOnActuClickListener);
+
+
+            } else {
+                Toast.makeText(this, "Unable to complete your request", Toast.LENGTH_LONG).show();
             }
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Caught Exception", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
+    }
 
 }
