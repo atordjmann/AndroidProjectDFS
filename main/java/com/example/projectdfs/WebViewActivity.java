@@ -23,8 +23,11 @@ public class WebViewActivity extends AppCompatActivity {
         webView = (WebView) findViewById(R.id.webview1);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setUseWideViewPort(true);
 
         webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setScrollbarFadingEnabled(false);
 
         progressDialog = ProgressDialog.show(WebViewActivity.this, "Chargement de l'article", "Chargement...");
 
