@@ -18,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -157,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void RemplirNewsData(String source) {
+    private void RemplirNewsData(final String source) {
         listNews = new ArrayList<News>();
         try {
             String myUrl = "https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&language=fr&sources=" + source;
@@ -207,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
                         intentDetail.putExtra("EXTRA_DATE", item.getDate());
                         intentDetail.putExtra("EXTRA_IMAGE", item.getImage());
                         intentDetail.putExtra("EXTRA_URL", item.getUrl());
+                        intentDetail.putExtra("EXTRA_SOURCE", source);
 
                         startActivity(intentDetail);
                     }

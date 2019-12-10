@@ -23,7 +23,7 @@
 
     <TextView
         android:id="@+id/detailAuteur"
-        android:layout_width="313dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginLeft="30dp"
@@ -93,5 +93,16 @@
         android:text="Lire l'article"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+    <TextView
+        android:id="@+id/detailSource"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
+        app:layout_constraintStart_toEndOf="@+id/detailAuteur"
+        app:layout_constraintTop_toBottomOf="@+id/detailTitre" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
