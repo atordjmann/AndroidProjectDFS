@@ -2,8 +2,12 @@ package com.example.projectdfs;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+
 
 public class NewsDetailActivity extends AppCompatActivity {
 
@@ -17,7 +21,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         String sessionDate = getIntent().getStringExtra("EXTRA_DATE");
         String sessionContent = getIntent().getStringExtra("EXTRA_CONTENT");
         String sessionImage = getIntent().getStringExtra("EXTRA_IMAGE");
-        String sessionUrl = getIntent().getStringExtra("EXTRA_URL");
+        final String sessionUrl = getIntent().getStringExtra("EXTRA_URL");
 
         TextView titre = (TextView) findViewById(R.id.detailTitre);
         TextView auteur = (TextView) findViewById(R.id.detailAuteur);
@@ -28,6 +32,18 @@ public class NewsDetailActivity extends AppCompatActivity {
         auteur.setText(sessionAuteur);
         date.setText(sessionDate);
         content.setText(sessionContent);
+
+        Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent(NewsDetailActivity.this, WebViewActivity.class);
+                intent.putExtra("EXTRA_URL", sessionUrl);
+                startActivity(intent);
+            }
+
+        });
 
     }
 }
