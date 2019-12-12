@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     List<String> listSourcesName = new ArrayList<String>();
     List<News> listNews = new ArrayList<News>();
     Spinner spinner;
+    int page = 1;
+    String source;
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -74,8 +76,11 @@ public class MainActivity extends AppCompatActivity {
             spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinner.setAdapter(spinnerAdapter);
 
-            String source = "google-news-fr";
-            this.RemplirNewsData(source);
+            TextView pageTxt = (TextView) findViewById(R.id.pageNbr);
+            pageTxt.setText("Page n° " + page);
+
+            source = "google-news-fr";
+            this.RemplirNewsData(source, page);
 
             AdapterView.OnItemSelectedListener elementSelectedListener = new AdapterView.OnItemSelectedListener() {
                 @Override
@@ -85,8 +90,11 @@ public class MainActivity extends AppCompatActivity {
                     while (listSources.get(index).getName() != sourceName) {
                         index += 1;
                     }
-                    String sourceId = listSources.get(index).getId();
-                    RemplirNewsData(sourceId);
+                    source = listSources.get(index).getId();
+                    page = 1;
+                    TextView pageTxt = (TextView) findViewById(R.id.pageNbr);
+                    pageTxt.setText("Page n° " + page);
+                    RemplirNewsData(source, page);
                 }
 
                 @Override
@@ -94,6 +102,45 @@ public class MainActivity extends AppCompatActivity {
                 }
             };
             spinner.setOnItemSelectedListener(elementSelectedListener);
+
+
+            Button buttonPrev = (Button) findViewById(R.id.buttonprev);
+            buttonPrev.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+                    if(page > 1){
+                        page -= 1;
+                        RemplirNewsData(source, page);
+                        TextView pageTxt = (TextView) findViewById(R.id.pageNbr);
+                        pageTxt.setText("Page n° " + page);
+                    }
+                }
+
+            });
+            Button buttonNext = (Button) findViewById(R.id.buttonnext);
+            buttonNext.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+                    try{
+                    String myUrl = "https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&language=fr&sources=" + source + "&page=" + page;
+                    URL url = new URL(myUrl);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.connect();
+                    int reponseCode = connection.getResponseCode();
+                    if (reponseCode == HttpURLConnection.HTTP_OK) {
+                        page += 1;
+                        RemplirNewsData(source, page);
+                        TextView pageTxt = (TextView) findViewById(R.id.pageNbr);
+                        pageTxt.setText("Page n° " + page);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                }
+
+            });
 
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -147,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                 //TextView mTxtDisplay = (TextView) findViewById(R.id.textHello);
                 //mTxtDisplay.setText("Response is: " + array.toString());
             } else {
-                Toast.makeText(this, "Unable to complete your request", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Pas de données à afficher", Toast.LENGTH_LONG).show();
             }
 
         } catch (Exception e) {
@@ -158,10 +205,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void RemplirNewsData(final String source) {
+    private void RemplirNewsData(final String source, int page) {
         listNews = new ArrayList<News>();
         try {
-            String myUrl = "https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&language=fr&sources=" + source;
+            String myUrl = "https://newsapi.org/v2/everything?apiKey=d31f5fa5f03443dd8a1b9e3fde92ec34&language=fr&sources=" + source + "&page=" + page;
             URL url = new URL(myUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
