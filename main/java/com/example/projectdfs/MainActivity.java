@@ -3,7 +3,6 @@ package com.example.projectdfs;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,12 +13,11 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     Spinner spinner;
     int page = 1;
     String source;
+    ProgressBar loader;
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -62,11 +61,17 @@ public class MainActivity extends AppCompatActivity {
             StrictMode.setThreadPolicy(policy);
         }
 
+        loader=(ProgressBar)findViewById(R.id.progressbar);
+
+
+
         runTask();
+
 
     }
 
     public void runTask () {
+        loader.setVisibility(View.VISIBLE);
         if (isNetworkAvailable()) {
 
             this.GetSourcesAPI();
@@ -142,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
 
             });
 
+
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setCancelable(false);
@@ -166,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
             dialog.show();
             Toast.makeText(MainActivity.this, "Network unavailable", Toast.LENGTH_LONG).show();
         }
+        loader.setVisibility(View.GONE);
     }
     private void GetSourcesAPI() {
         try {
